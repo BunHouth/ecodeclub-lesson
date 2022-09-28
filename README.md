@@ -1,4 +1,4 @@
-# Lesson 6 - Building unit tests for HelloWorld.sol
+# Lesson 7 - Coding Ballot.sol
 ## (Review) Coding in VS Code
 * Syntax for typescript scripts
 * How the project operates
@@ -8,18 +8,6 @@
 * Using Typechain library
 * Testing syntax
 * Running a test file
-### Getting start 
-__Setup dot env__
-```bash
-cp .env.example .env1
-```
-__Scripts__
-```
-yarn clean
-yarn compile
-yarn test
-```
-
 ### References
 https://docs.ethers.io/v5/
 
@@ -33,114 +21,154 @@ https://www.chaijs.com/guide/
 
 https://github.com/dethcrypto/TypeChain
 
-## TDD methodology
-* Writing unit tests that fail first
-* Filling code that completes the test
-* Refactoring
-* Measuring code smell
-* Measuring coverage
-* Iteration process
-* How HelloWorld.sol could be tested
-### References
-https://www.agilealliance.org/glossary/tdd/
+## Introduction for Ballot.sol
+* Scenario strategy
+* The Ballot contract
+* Giving voting rights
+* Voting
+* Delegating
+* Proposals
+### Reference
+https://docs.soliditylang.org/en/latest/solidity-by-example.html#voting
 
-https://www.browserstack.com/guide/what-is-test-driven-development
-
-## Running tests on HelloWorld.sol
-* Contract
-<pre><code>// SPDX-License-Identifier: GPL-3.0
-pragma solidity >=0.7.0 <0.9.0;
-
-contract HelloWorld {
-    string private text;
-    address public owner;
-
-    constructor() {
-        text = "Hello World";
-        owner = msg.sender;
-    }
-
-    function helloWorld() public view returns (string memory) {
-        return text;
-    }
-
-    function setText(string calldata newText) public onlyOwner {
-        text = newText;
-    }
-
-    function transferOwnership(address newOwner) public onlyOwner {
-        owner = newOwner;
-    }
-
-    modifier onlyOwner()
-    {
-        require (msg.sender == owner, "Caller is not the owner");
-        _;
-    }
-}
-</code></pre>
-* Tests
+## Writing unit tests for Ballot.sol
+* More on Ether.js functions and utilities
+* Bytes32 and Strings conversion
+* Helper functions inside test scripts
+* Unit tests structure and nested tests
+### Code reference for tests
 <pre><code>import { expect } from "chai";
 import { ethers } from "hardhat";
-// https://github.com/dethcrypto/TypeChain
-import { HelloWorld } from "../typechain-types";
+import { Ballot } from "../typechain-types";
 
-// https://mochajs.org/#getting-started
-describe("HelloWorld", function () {
-  let helloWorldContract: HelloWorld;
+const PROPOSALS = ["Proposal 1", "Proposal 2", "Proposal 3"];
 
-  // https://mochajs.org/#hooks
+function convertStringArrayToBytes32(array: string[]) {
+  const bytes32Array = [];
+  for (let index = 0; index < array.length; index++) {
+    bytes32Array.push(ethers.utils.formatBytes32String(array[index]));
+  }
+  return bytes32Array;
+}
+
+describe("Ballot", function () {
+  let ballotContract: Ballot;
+
   beforeEach(async function () {
-    // https://hardhat.org/plugins/nomiclabs-hardhat-ethers.html#helpers
-    const helloWorldFactory = await ethers.getContractFactory("HelloWorld");
-    // https://docs.ethers.io/v5/api/contract/contract-factory/#ContractFactory-deploy
-    helloWorldContract = await helloWorldFactory.deploy() as HelloWorld;
-    https://docs.ethers.io/v5/api/contract/contract/#Contract-deployed
-    await helloWorldContract.deployed();
+    const ballotFactory = await ethers.getContractFactory("Ballot");
+    ballotContract = await ballotFactory.deploy(
+      convertStringArrayToBytes32(PROPOSALS)
+    );
+    await ballotContract.deployed();
   });
 
-  it("Should give a Hello World", async function () {
-    // https://docs.ethers.io/v5/api/contract/contract/#Contract-functionsCall
-    const helloWorldText = await helloWorldContract.helloWorld();
-    // https://www.chaijs.com/api/bdd/#method_equal
-    expect(helloWorldText).to.equal("Hello World");
+  describe("when the contract is deployed", function () {
+    it("has the provided proposals", async function () {
+      for (let index = 0; index < PROPOSALS.length; index++) {
+        const proposal = await ballotContract.proposals(index);
+        expect(ethers.utils.parseBytes32String(proposal.name)).to.eq(
+          PROPOSALS[index]
+        );
+      }
+    });
+
+    it("has zero votes for all proposals", async function () {
+      // TODO
+      throw Error("Not implemented");
+    });
+    it("sets the deployer address as chairperson", async function () {
+      // TODO
+      throw Error("Not implemented");
+    });
+    it("sets the voting weight for the chairperson as 1", async function () {
+      // TODO
+      throw Error("Not implemented");
+    });
   });
 
-  it("Should set owner to deployer account", async function () {
-    // https://hardhat.org/plugins/nomiclabs-hardhat-ethers.html#helpers
-    const accounts = await ethers.getSigners();
-    // https://docs.ethers.io/v5/api/contract/contract/#Contract-functionsCall
-    const contractOwner = await helloWorldContract.owner();
-    // https://www.chaijs.com/api/bdd/#method_equal
-    expect(contractOwner).to.equal(accounts[0].address);
+  describe("when the chairperson interacts with the giveRightToVote function in the contract", function () {
+    it("gives right to vote for another address", async function () {
+      // TODO
+      throw Error("Not implemented");
+    });
+    it("can not give right to vote for someone that has voted", async function () {
+      // TODO
+      throw Error("Not implemented");
+    });
+    it("can not give right to vote for someone that has already voting rights", async function () {
+      // TODO
+      throw Error("Not implemented");
+    });
   });
 
-  it("Should not allow anyone other than owner to call transferOwnership", async function () {
-    // https://hardhat.org/plugins/nomiclabs-hardhat-ethers.html#helpers
-    const accounts = await ethers.getSigners();
-    // https://docs.ethers.io/v5/api/contract/contract/#Contract-connect
-    // https://docs.ethers.io/v5/api/contract/contract/#contract-functionsSend
-    // https://hardhat.org/hardhat-chai-matchers/docs/overview#reverts
-    await expect(
-      helloWorldContract
-        .connect(accounts[1])
-        .transferOwnership(accounts[1].address)
-    ).to.be.revertedWith("Caller is not the owner");
-  });
-
-  it("Should execute transferOwnership correctly", async function () {
+  describe("when the voter interact with the vote function in the contract", function () {
     // TODO
-    throw Error("Not implemented");
+    it("should register the vote", async () => {
+      throw Error("Not implemented");
+    });
   });
 
-  it("Should not allow anyone other than owner to change text", async function () {
+  describe("when the voter interact with the delegate function in the contract", function () {
     // TODO
-    throw Error("Not implemented");
+    it("should transfer voting power", async () => {
+      throw Error("Not implemented");
+    });
   });
 
-  it("Should change text correctly", async function () {
+  describe("when the an attacker interact with the giveRightToVote function in the contract", function () {
     // TODO
-    throw Error("Not implemented");
+    it("should revert", async () => {
+      throw Error("Not implemented");
+    });
+  });
+
+  describe("when the an attacker interact with the vote function in the contract", function () {
+    // TODO
+    it("should revert", async () => {
+      throw Error("Not implemented");
+    });
+  });
+
+  describe("when the an attacker interact with the delegate function in the contract", function () {
+    // TODO
+    it("should revert", async () => {
+      throw Error("Not implemented");
+    });
+  });
+
+  describe("when someone interact with the winningProposal function before any votes are cast", function () {
+    // TODO
+    it("should return 0", async () => {
+      throw Error("Not implemented");
+    });
+  });
+
+  describe("when someone interact with the winningProposal function after one vote is cast for the first proposal", function () {
+    // TODO
+    it("should return 0", async () => {
+      throw Error("Not implemented");
+    });
+  });
+
+  describe("when someone interact with the winnerName function before any votes are cast", function () {
+    // TODO
+    it("should return name of proposal 0", async () => {
+      throw Error("Not implemented");
+    });
+  });
+
+  describe("when someone interact with the winnerName function after one vote is cast for the first proposal", function () {
+    // TODO
+    it("should return name of proposal 0", async () => {
+      throw Error("Not implemented");
+    });
+  });
+
+  describe("when someone interact with the winningProposal function and winnerName after 5 random votes are cast for the proposals", function () {
+    // TODO
+    it("should return the name of the winner proposal", async () => {
+      throw Error("Not implemented");
+    });
   });
 });
 </code></pre>
