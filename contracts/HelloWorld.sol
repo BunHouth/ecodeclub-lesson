@@ -15,6 +15,10 @@ contract HelloWorld {
         return text;
     }
 
+    function setText(string calldata newText) public onlyOwner {
+        text = newText;
+    }
+
     function transferOwnership(address newOwner) public onlyOwner {
         owner = newOwner;
     }
