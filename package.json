@@ -28,5 +28,8 @@
     "test": "hardhat test",
     "compile": "hardhat compile",
     "clean": "hardhat clean"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3"
   }
 }

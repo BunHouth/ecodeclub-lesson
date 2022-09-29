@@ -1,178 +1,136 @@
-# Lesson 7 - Coding Ballot.sol
-## (Review) Coding in VS Code
-* Syntax for typescript scripts
-* How the project operates
-* Writing a test file
-* Using Ethers.js library
-* Using Hardhat toolbox
-* Using Typechain library
-* Testing syntax
-* Running a test file
+# Lesson 8 - Scripts for Ballot.sol and events
+## Using scripts to automate operations
+* Running a script with yarn and node, ts-node and/or hardhat
+* Ballot deployment  script
+* Passing arguments
+* Passing variables to the deployment script
+* Environment files
+* Providers
+* Connecting to a testnet with a RPC Provider
+* Running scripts on chain
+* Script for giving voting rights to a given address
+* Dealing with transactions in scripts
 ### References
-https://docs.ethers.io/v5/
+https://hardhat.org/hardhat-runner/docs/guides/typescript#running-your-tests-and-scripts-directly-with--ts-node
 
-https://hardhat.org/hardhat-runner/docs/getting-started#overview
+https://nodejs.org/docs/latest/api/process.html#processargv
 
-https://mochajs.org/
+https://docs.ethers.io/v5/api/providers/
 
-https://hardhat.org/hardhat-chai-matchers/docs/overview
+https://docs.ethers.io/v5/api/contract/contract-factory/
 
-https://www.chaijs.com/guide/
-
-https://github.com/dethcrypto/TypeChain
-
-## Introduction for Ballot.sol
-* Scenario strategy
-* The Ballot contract
-* Giving voting rights
-* Voting
-* Delegating
-* Proposals
-### Reference
-https://docs.soliditylang.org/en/latest/solidity-by-example.html#voting
-
-## Writing unit tests for Ballot.sol
-* More on Ether.js functions and utilities
-* Bytes32 and Strings conversion
-* Helper functions inside test scripts
-* Unit tests structure and nested tests
-### Code reference for tests
-<pre><code>import { expect } from "chai";
-import { ethers } from "hardhat";
-import { Ballot } from "../typechain-types";
+<pre><code>import { ethers } from "hardhat";
 
 const PROPOSALS = ["Proposal 1", "Proposal 2", "Proposal 3"];
 
-function convertStringArrayToBytes32(array: string[]) {
-  const bytes32Array = [];
-  for (let index = 0; index < array.length; index++) {
-    bytes32Array.push(ethers.utils.formatBytes32String(array[index]));
-  }
-  return bytes32Array;
+async function main() {
+  console.log("Deploying Ballot contract");
+  console.log("Proposals: ");
+  PROPOSALS.forEach((element, index) => {
+    console.log(`Proposal N. ${index + 1}: ${element}`);
+  });
+  // TODO
 }
 
-describe("Ballot", function () {
-  let ballotContract: Ballot;
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});</code></pre>
+### Running scripts
+```
+yarn hardhat run scripts/Deployment.ts
+```
+### Running scripts with arguments
+```
+yarn run ts-node --files scripts/Deployment.ts "arg1" "arg2" "arg3
+```
 
-  beforeEach(async function () {
-    const ballotFactory = await ethers.getContractFactory("Ballot");
-    ballotContract = await ballotFactory.deploy(
-      convertStringArrayToBytes32(PROPOSALS)
+## Events with solidity
+* Event syntax
+* Event storage
+* Event indexing
+* Topics and filters
+* Transaction structure
+* State changes with events
+### References
+https://docs.soliditylang.org/en/latest/contracts.html#events
+
+https://dev.to/hideckies/ethers-js-cheat-sheet-1h5j
+### Code reference
+<pre><code>    event NewVoter(address indexed voter);
+
+    event Delegated(
+        address indexed voter,
+        address indexed finalDelegate,
+        uint256 finalWeight,
+        bool voted,
+        uint256 proposal,
+        uint256 proposalVotes
     );
-    await ballotContract.deployed();
-  });
 
-  describe("when the contract is deployed", function () {
-    it("has the provided proposals", async function () {
-      for (let index = 0; index < PROPOSALS.length; index++) {
-        const proposal = await ballotContract.proposals(index);
-        expect(ethers.utils.parseBytes32String(proposal.name)).to.eq(
-          PROPOSALS[index]
-        );
-      }
-    });
+    event Voted(
+        address indexed voter,
+        uint256 indexed proposal,
+        uint256 weight
+    );
+</code></pre>
+## Watching for events in tests
+* Event syntax with Hardhat Chai Matchers
+* Triggering an event
+* Checking arguments
+### References
+https://hardhat.org/hardhat-chai-matchers/docs/overview#events
+### Code reference
 
-    it("has zero votes for all proposals", async function () {
-      // TODO
-      throw Error("Not implemented");
+<pre><code>    it("triggers the NewVoter event with the address of the new voter", async function () {
+      const voterAddress = accounts[1].address;
+      await expect(ballotContract.giveRightToVote(voterAddress))
+        .to.emit(ballotContract, "NewVoter")
+        .withArgs(voterAddress);
     });
-    it("sets the deployer address as chairperson", async function () {
-      // TODO
-      throw Error("Not implemented");
-    });
-    it("sets the voting weight for the chairperson as 1", async function () {
-      // TODO
-      throw Error("Not implemented");
-    });
-  });
+</code></pre>
 
-  describe("when the chairperson interacts with the giveRightToVote function in the contract", function () {
-    it("gives right to vote for another address", async function () {
-      // TODO
-      throw Error("Not implemented");
-    });
-    it("can not give right to vote for someone that has voted", async function () {
-      // TODO
-      throw Error("Not implemented");
-    });
-    it("can not give right to vote for someone that has already voting rights", async function () {
-      // TODO
-      throw Error("Not implemented");
-    });
-  });
+## Watching for events using a provider
+* Event syntax for Ethers.js library
+* Filters, EventFilters and topics
+* Event arguments
+* Event listeners and memory usage
+* Async logic
 
-  describe("when the voter interact with the vote function in the contract", function () {
-    // TODO
-    it("should register the vote", async () => {
-      throw Error("Not implemented");
-    });
-  });
+### References
+https://docs.ethers.io/v5/concepts/events/
 
-  describe("when the voter interact with the delegate function in the contract", function () {
-    // TODO
-    it("should transfer voting power", async () => {
-      throw Error("Not implemented");
-    });
-  });
+https://docs.ethers.io/v5/api/contract/contract/#Contract--events
 
-  describe("when the an attacker interact with the giveRightToVote function in the contract", function () {
-    // TODO
-    it("should revert", async () => {
-      throw Error("Not implemented");
-    });
-  });
+https://docs.ethers.io/v5/api/providers/types/#providers-Filter
 
-  describe("when the an attacker interact with the vote function in the contract", function () {
-    // TODO
-    it("should revert", async () => {
-      throw Error("Not implemented");
-    });
-  });
+https://docs.ethers.io/v5/api/providers/types/#providers-EventFilter
 
-  describe("when the an attacker interact with the delegate function in the contract", function () {
-    // TODO
-    it("should revert", async () => {
-      throw Error("Not implemented");
-    });
-  });
+### Code reference
 
-  describe("when someone interact with the winningProposal function before any votes are cast", function () {
-    // TODO
-    it("should return 0", async () => {
-      throw Error("Not implemented");
-    });
+<pre><code>  const eventFilter = ballotContract.filters.NewVoter();
+  provider.on(eventFilter, (log) => {
+    console.log("New voter");
+    console.log({ log });
   });
-
-  describe("when someone interact with the winningProposal function after one vote is cast for the first proposal", function () {
-    // TODO
-    it("should return 0", async () => {
-      throw Error("Not implemented");
-    });
+  const eventFilter2 = ballotContract.filters.Voted();
+  provider.on(eventFilter2, (log) => {
+    console.log("New vote cast");
+    console.log({ log });
   });
-
-  describe("when someone interact with the winnerName function before any votes are cast", function () {
-    // TODO
-    it("should return name of proposal 0", async () => {
-      throw Error("Not implemented");
-    });
+  const eventFilter3 = ballotContract.filters.Delegated();
+  provider.on(eventFilter3, (log) => {
+    console.log("New vote delegation");
+    console.log({ log });
   });
-
-  describe("when someone interact with the winnerName function after one vote is cast for the first proposal", function () {
-    // TODO
-    it("should return name of proposal 0", async () => {
-      throw Error("Not implemented");
-    });
-  });
-
-  describe("when someone interact with the winningProposal function and winnerName after 5 random votes are cast for the proposals", function () {
-    // TODO
-    it("should return the name of the winner proposal", async () => {
-      throw Error("Not implemented");
-    });
-  });
-});
 </code></pre>
 
 # Homework
 * Create Github Issues with your questions about this lesson
 * Read the references
+
+# Weekend Project
+* Form groups of 3 to 5 students
+* Develop and run scripts for “Ballot.sol” within your group to give voting rights, casting votes, delegating votes and querying results
+* Write a report with each function execution and the transaction hash, if successful, or the revert reason, if failed
+* Submit your code in a github repository in the form
