@@ -20,23 +20,23 @@ describe("Ballot", () => {
     await ballotContract.deployed();
   });
 
-  describe("when the contract is deployed", function () {
-    it("has the provided proposals", async function () {
+  describe("when the contract is deployed", () => {
+    it("has the provided proposals", async () => {
       for (let index = 0; index < PROPOSALS.length; index++) {
         const name = await ballotContract.proposalNames(index);
         expect(ethers.utils.parseBytes32String(name)).to.eq(PROPOSALS[index]);
       }
     });
 
-    it("has zero votes for all proposals", async function () {
+    it("has zero votes for all proposals", async () => {
       // TODO
       throw Error("Not implemented");
     });
-    it("sets the deployer address as chairperson", async function () {
+    it("sets the deployer address as chairperson", async () => {
       // TODO
       throw Error("Not implemented");
     });
-    it("sets the voting weight for the chairperson as 1", async function () {
+    it("sets the voting weight for the chairperson as 1", async () => {
       // TODO
       throw Error("Not implemented");
     });
