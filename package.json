@@ -27,7 +27,9 @@
   "scripts": {
     "test": "hardhat test",
     "compile": "hardhat compile",
-    "clean": "hardhat clean"
+    "clean": "hardhat clean",
+    "deploy": "hardhat run scripts/DeploymentEther.ts",
+    "deploy:dev": "hardhat run scripts/Deployment.ts"
   },
   "dependencies": {
     "dotenv": "^16.0.3"
