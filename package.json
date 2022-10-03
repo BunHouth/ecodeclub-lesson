@@ -28,10 +28,10 @@
     "test": "hardhat test",
     "compile": "hardhat compile",
     "clean": "hardhat clean",
-    "deploy": "hardhat run scripts/DeploymentEther.ts",
-    "deploy:dev": "hardhat run scripts/Deployment.ts"
+    "deploy": "hardhat run scripts/Deployment.ts"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^4.7.3",
     "dotenv": "^16.0.3"
   }
 }
