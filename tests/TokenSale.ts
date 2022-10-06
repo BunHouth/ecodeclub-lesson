@@ -1,4 +1,5 @@
 
+import { BigNumber } from "@ethersproject/bignumber";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
@@ -45,20 +46,31 @@ describe("NFT Shop", () => {
   });
 
   describe("When a user purchase an ERC20 from the Token contract", () => {
-    const amountToBeSentBN = ethers.utils.parseUnits("1", "wei");
+    const amountToBeSentBn=ethers.utils.parseEther("1");
+    let balanceBeforeBn: BigNumber;
+    let gasCosts: BigNumber;
+    
     beforeEach(async () => {
-      const purchaseTokensTx = await tokenSaleContract.connect(acc1).purchaseTokens({value: amountToBeSentBN});
-      await purchaseTokensTx.wait();
+      balanceBeforeBn = await acc1.getBalance();
+      const purchaseTokensTx = await tokenSaleContract.connect(acc1).purchaseTokens({value: amountToBeSentBn});
+      const purchaseTokensTxReceipt = await purchaseTokensTx.wait();
+      const gasUnitsUsed = purchaseTokensTxReceipt.gasUsed;
+      const gasPrice = purchaseTokensTxReceipt.effectiveGasPrice;
+      gasCosts = gasUnitsUsed.mul(gasPrice);
     })
+    
 
     it("charges the correct amount of ETH", async() => {
-      const acc1Balance = await erc20Token.balanceOf(acc1.address);
-      expect(acc1Balance).to.eq(amountToBeSentBN.div(ERC20_TOKEN_RATIO));
+      const balanceAfterBn = await acc1.getBalance() ;
+      const diff = balanceBeforeBn.sub(balanceAfterBn);
+      const expectedDiff = amountToBeSentBn.add(gasCosts);
+      const error = diff.sub(expectedDiff);
+      expect(error).to.eq(0);
     });
 
     it("gives the correct amount of tokens", async () => {
       const acc1Balance = await erc20Token.balanceOf(acc1.address);
-      expect(acc1Balance).to.eq(amountToBeSentBN.div(ERC20_TOKEN_RATIO))
+      expect(acc1Balance).to.eq(amountToBeSentBn.div(ERC20_TOKEN_RATIO))
     });
   });
 
