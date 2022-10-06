@@ -1,73 +1,112 @@
-# Lesson 9 - MyERC20.sol and MyERC721.sol
-## Quickstart with OpenZeppelin wizard
-* Overview about Ethereum Improvement Proposals (EIPs)
-* Overview about Application-level standards and conventions (ERCs)
-* Explain about OpenZeppelin Contracts library
-* (Review) Objects in smart contracts
-* Inheritance overview
-* Overview about ERC20
-* Overview about ERC721
-* Using OpenZeppelin wizard
+# Lesson 10 - TokenSale.sol
+## Challenge explanation
+* Application Features
+  * Buy a ERC20 with ETH for a fixed ratio
+  * Withdraw ETH by burning the ERC20 tokens
+  * Buy (Mint) a new ERC721 for a configured price
+  * Update owner account whenever a NFT is sold
+  * Allow owner to withdraw from account
+    * Only half of sales value is available for withdraw
+  * Allow users to burn their NFTs to recover half of the purchase price
+* Architecture overview
+* Contract external calls
+## Tests layout
+* (Review) TDD methodology
+* Best practices on external calls
+* Dealing with decimals and divisions
+  * Shifting decimal points
+  * Underflow
+  * Overflow
+* (Review) Test syntax
+* (Review) Positive and negative tests
+* Integration tests
 ### References
-https://eips.ethereum.org/
+https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/external-calls/
 
-https://eips.ethereum.org/erc
+https://docs.soliditylang.org/en/latest/types.html#division
 
-https://docs.openzeppelin.com/contracts/4.x/
+https://github.com/wissalHaji/solidity-coding-advices/blob/master/best-practices/rounding-errors-with-division.md
+### Test code reference
+<pre><code>
+import { expect } from "chai";
+import { ethers } from "hardhat";
 
-https://docs.openzeppelin.com/contracts/4.x/erc20
+describe("NFT Shop", () => {
+  beforeEach(() => {});
 
-https://docs.openzeppelin.com/contracts/4.x/erc721
+  describe("When the Shop contract is deployed", () => {
+    it("defines the ratio as provided in parameters", () => {
+      throw new Error("Not implemented");
+    });
 
-https://docs.soliditylang.org/en/latest/contracts.html#inheritance
+    it("uses a valid ERC20 as payment token", () => {
+      throw new Error("Not implemented");
+    });
+  });
 
-https://solidity-by-example.org/inheritance/
+  describe("When a user purchase an ERC20 from the Token contract", () => {
+    it("charges the correct amount of ETH", () => {
+      throw new Error("Not implemented");
+    });
 
-https://docs.openzeppelin.com/contracts/4.x/wizard
+    it("gives the correct amount of tokens", () => {
+      throw new Error("Not implemented");
+    });
+  });
 
-### Plain ERC20 Code reference
+  describe("When a user burns an ERC20 at the Token contract", () => {
+    it("gives the correct amount of ETH", () => {
+      throw new Error("Not implemented");
+    });
 
-<pre><code>// SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0 <0.9.0;
+    it("burns the correct amount of tokens", () => {
+      throw new Error("Not implemented");
+    });
+  });
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+  describe("When a user purchase a NFT from the Shop contract", () => {
+    it("charges the correct amount of ETH", () => {
+      throw new Error("Not implemented");
+    });
 
-contract MyToken is ERC20 {
-    constructor() ERC20("MyToken", "MTK") {}
-}
+    it("updates the owner account correctly", () => {
+      throw new Error("Not implemented");
+    });
+
+    it("update the pool account correctly", () => {
+      throw new Error("Not implemented");
+    });
+
+    it("favors the pool with the rounding", () => {
+      throw new Error("Not implemented");
+    });
+  });
+
+  describe("When a user burns their NFT at the Shop contract", () => {
+    it("gives the correct amount of ERC20 tokens", () => {
+      throw new Error("Not implemented");
+    });
+    it("updates the pool correctly", () => {
+      throw new Error("Not implemented");
+    });
+  });
+
+  describe("When the owner withdraw from the Shop contract", () => {
+    it("recovers the right amount of ERC20 tokens", () => {
+      throw new Error("Not implemented");
+    });
+
+    it("updates the owner account correctly", () => {
+      throw new Error("Not implemented");
+    });
+  });
+});
 </code></pre>
-### Plain ERC721 Code reference
-
-<pre><code>// SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0 <0.9.0;
-
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-
-contract MyToken is ERC721 {
-    constructor() ERC721("MyToken", "MTK") {}
-}
-</code></pre>
-## Contract structure
-* Syntax about inheritance
-* Overview about OpenZeppelin features for ERC20 and ERC721
-* Overview about OpenZeppelin features for Access Control
-* Overview about OpenZeppelin utilities and components
-* Adding minting feature
-* Adding RBAC feature
 ### References
-https://www.npmjs.com/package/@openzeppelin/contracts
+https://fravoll.github.io/solidity-patterns/
 
-https://docs.openzeppelin.com/contracts/4.x/extending-contracts
+https://dev.to/jamiescript/design-patterns-in-solidity-1i28
 
-https://docs.openzeppelin.com/contracts/4.x/access-control
-## Operating the contracts with scripts
-* (Review) Script operation
-* (Review) Accounts and funding
-* (Review) Providers
-* (Review) Async operations
-* (Review) Running scripts on test environment
-* Contract factory and json imports
-* Transaction receipts and async complexities when running onchain
 # Homework
 * Create Github Issues with your questions about this lesson
 * Read the references
